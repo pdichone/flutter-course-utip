@@ -64,6 +64,30 @@ class _UTipState extends State<UTip> {
                   ],
                 )),
           ),
+          // Form
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border:
+                      Border.all(color: theme.colorScheme.primary, width: 2)),
+              child: Column(
+                children: [
+                  TextField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.attach_money),
+                        labelText: 'Bill Amount'),
+                    keyboardType: TextInputType.number,
+                    onChanged: (String value) {
+                      print("Value: $value ");
+                    },
+                  )
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
