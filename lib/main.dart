@@ -35,10 +35,19 @@ class _UTipState extends State<UTip> {
       appBar: AppBar(
         title: const Text('UTip'),
       ),
-      body: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
         children: [
-          Text("Hello there"),
+          Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius: BorderRadius.circular(10)),
+              child: const Column(
+                children: [
+                  Text("Total per Person"),
+                  Text("\$23.89"),
+                ],
+              )),
         ],
       ),
     );
