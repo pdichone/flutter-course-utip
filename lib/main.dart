@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
+import 'package:utip/widgets/tip_slider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +33,16 @@ class UTip extends StatefulWidget {
 
 class _UTipState extends State<UTip> {
   int _personCount = 1;
+  double _tipPercentage = 0.0;
+  double _billTotal = 0.0;
+
+  double totalPerPerson() {
+    return ((_billTotal * _tipPercentage) + (_billTotal)) / _personCount;
+  }
+
+  double totalTip() {
+    return (_billTotal * _tipPercentage);
+  }
 
   // Methods
   void increment() {
@@ -41,7 +53,7 @@ class _UTipState extends State<UTip> {
 
   void decrement() {
     setState(() {
-      if (_personCount > 0) {
+      if (_personCount > 1) {
         _personCount--;
       }
     });
@@ -50,6 +62,8 @@ class _UTipState extends State<UTip> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    double total = totalPerPerson();
+    double totalT = totalTip();
     // Add style
     final style = theme.textTheme.titleMedium!.copyWith(
         color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold);
@@ -74,7 +88,7 @@ class _UTipState extends State<UTip> {
                       style: style,
                     ),
                     Text(
-                      "\$23.89",
+                      "$total",
                       style: style.copyWith(
                           color: theme.colorScheme.onPrimary,
                           fontSize: theme.textTheme.displaySmall?.fontSize),
@@ -86,20 +100,20 @@ class _UTipState extends State<UTip> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   border:
                       Border.all(color: theme.colorScheme.primary, width: 2)),
               child: Column(
                 children: [
-                  TextField(
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.attach_money),
-                        labelText: 'Bill Amount'),
-                    keyboardType: TextInputType.number,
-                    onChanged: (String value) {
-                      print("Value: $value ");
+                  BillAmountField(
+                    billAmount: _billTotal.toString(),
+                    onChanged: (value) {
+                      setState(() {
+                        _billTotal = double.parse(value);
+                      });
+                      // print("Amount: $value");
                     },
                   ),
                   // Split Bill area
@@ -115,13 +129,40 @@ class _UTipState extends State<UTip> {
                         personCount: _personCount,
                         onDecrement: decrement,
                         onIncrement: increment,
+                      ),
+                    ],
+                  ),
+                  // === Tip Section ==
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Tip',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      Text(
+                        "$totalT",
+                        style: theme.textTheme.titleMedium,
                       )
                     ],
+                  ),
+
+                  // == Slider Text ==
+                  Text('${(_tipPercentage * 100).round()}%'),
+
+                  // == Tip Slider ==
+                  TipSlider(
+                    tipPercentage: _tipPercentage,
+                    onChanged: (double value) {
+                      setState(() {
+                        _tipPercentage = value;
+                      });
+                    },
                   )
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
