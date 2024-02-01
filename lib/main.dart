@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
+import 'package:utip/widgets/tip_row.dart';
 import 'package:utip/widgets/tip_slider.dart';
+import 'package:utip/widgets/total_per_person.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +36,7 @@ class UTip extends StatefulWidget {
 class _UTipState extends State<UTip> {
   int _personCount = 1;
   double _tipPercentage = 0.0;
-  double _billTotal = 100.0;
+  double _billTotal = 0.0;
 
   double totalPerPerson() {
     return ((_billTotal * _tipPercentage) + (_billTotal)) / _personCount;
@@ -71,99 +73,60 @@ class _UTipState extends State<UTip> {
       appBar: AppBar(
         title: const Text('UTip'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-                padding: const EdgeInsets.all(18),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TotalPerPerson(theme: theme, style: style, total: total),
+            // Form
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: theme.colorScheme.inversePrimary,
-                    borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(5),
+                    border:
+                        Border.all(color: theme.colorScheme.primary, width: 2)),
                 child: Column(
                   children: [
-                    Text(
-                      "Total per Person",
-                      style: style,
+                    BillAmountField(
+                      billAmount: _billTotal.toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          _billTotal = double.parse(value);
+                        });
+                        // print("Amount: $value");
+                      },
                     ),
-                    Text(
-                      "${total.toStringAsFixed(2)}",
-                      style: style.copyWith(
-                          color: theme.colorScheme.onPrimary,
-                          fontSize: theme.textTheme.displaySmall?.fontSize),
+                    // Split Bill area
+                    PersonCounter(
+                      theme: theme,
+                      personCount: _personCount,
+                      onDecrement: decrement,
+                      onIncrement: increment,
                     ),
+                    // === Tip Section ==
+                    TipRow(theme: theme, totalTip: totalTip),
+
+                    // == Slider Text ==
+                    Text('${(_tipPercentage * 100).round()}%'),
+
+                    // == Tip Slider ==
+                    TipSlider(
+                      tipPercentage: _tipPercentage,
+                      onChanged: (double value) {
+                        setState(() {
+                          _tipPercentage = value;
+                        });
+                      },
+                    )
                   ],
-                )),
-          ),
-          // Form
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border:
-                      Border.all(color: theme.colorScheme.primary, width: 2)),
-              child: Column(
-                children: [
-                  BillAmountField(
-                    billAmount: _billTotal.toString(),
-                    onChanged: (value) {
-                      setState(() {
-                        _billTotal = double.parse(value);
-                      });
-                      // print("Amount: $value");
-                    },
-                  ),
-                  // Split Bill area
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Split',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      PersonCounter(
-                        theme: theme,
-                        personCount: _personCount,
-                        onDecrement: decrement,
-                        onIncrement: increment,
-                      ),
-                    ],
-                  ),
-                  // === Tip Section ==
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Tip',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      Text(
-                        totalTip.toStringAsFixed(2),
-                        style: theme.textTheme.titleMedium,
-                      )
-                    ],
-                  ),
-
-                  // == Slider Text ==
-                  Text('${(_tipPercentage * 100).round()}%'),
-
-                  // == Tip Slider ==
-                  TipSlider(
-                    tipPercentage: _tipPercentage,
-                    onChanged: (double value) {
-                      setState(() {
-                        _tipPercentage = value;
-                      });
-                    },
-                  )
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
