@@ -6,6 +6,7 @@ import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
 import 'package:utip/widgets/tip_row.dart';
 import 'package:utip/widgets/tip_slider.dart';
+import 'package:utip/widgets/toggle_theme_button.dart';
 import 'package:utip/widgets/total_per_person.dart';
 
 void main() {
@@ -23,12 +24,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: 'UTip App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: themeProvider.currentTheme,
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      //   useMaterial3: true,
+      // ),
       home: const UTip(),
     );
   }
@@ -46,14 +49,15 @@ class _UTipState extends State<UTip> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     final model = Provider.of<TipCalculatorModel>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
 
     // Add style
     final style = theme.textTheme.titleMedium!.copyWith(
         color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('UTip'),
+        actions: [ToggleThemeButton()],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
